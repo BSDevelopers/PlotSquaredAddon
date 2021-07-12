@@ -144,9 +144,9 @@ public class PlotSquaredAddon extends PetAddon {
     @Override
     public List<String> getDescription() {
         return Lists.newArrayList(
-                "This addon links into the PlotSquared plugin",
-                "to allow/deny certain pet events from happening",
-                "on certain parts of a plot world (road/unclaimed/denied)"
+                "&7This addon links into the PlotSquared plugin",
+                "&7to allow/deny certain pet events from happening",
+                "&7on certain parts of a plot world (road/unclaimed/denied)"
         );
     }
 

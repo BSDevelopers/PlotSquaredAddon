@@ -144,7 +144,7 @@ public class PlotSquaredAddon extends PetAddon {
 
     @Override
     public double getVersion() {
-        return 0.2;
+        return 0.3;
     }
 
     @Override

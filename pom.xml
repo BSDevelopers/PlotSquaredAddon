@@ -81,11 +81,6 @@
             <id>IntellectualSites</id>
             <url>https://mvn.intellectualsites.com/content/repositories/snapshots/</url>
         </repository>
-        <!-- SimplePets repo -->
-        <repository>
-            <id>pluginwiki-repo</id>
-            <url>http://ci.pluginwiki.us/plugin/repository/everything/</url>
-        </repository>
     </repositories>
 
     <dependencies>

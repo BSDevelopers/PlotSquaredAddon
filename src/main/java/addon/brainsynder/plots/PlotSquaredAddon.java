@@ -26,6 +26,8 @@ import java.util.List;
 public class PlotSquaredAddon extends PetAddon {
     private PermissionData masterBypass, spawnMaster, spawnRoad, spawnUnclaimed, moveMaster, moveRoad, moveUnclaimed, moveDenied;
 
+    private String missingPermission;
+
     private boolean checkSpawningRoads = false;
     private boolean checkSpawningUnclaimed = false;
     private boolean checkMovingRoads = false;
@@ -61,7 +63,10 @@ public class PlotSquaredAddon extends PetAddon {
 
     @Override
     public void loadDefaults(AddonConfig config) {
-        config.addDefault("spawning-checks.enabled", true,
+        config.addDefault("Missing-Permission", "&cYou are missing the &7{permission} &cpermission",
+                "This is the message that will be sent if a pet fails to spawn due to missing a permission\n" +
+                        "It will show up when you hover the mouse over the failed message");
+        config.addDefault("spawning-checks.enabled", false,
                 "Should there be ANY checks for when a pet is spawned");
         config.addDefault("spawning-checks.roads", false,
                 "Should the addon check if the player can spawn the pet on the road");
@@ -96,6 +101,8 @@ public class PlotSquaredAddon extends PetAddon {
                 "This is the bypass permission for when a pet is moving on an unclaimed plot");
         config.addDefault("bypass-permissions.move.denied", "pet.plotsquared.move.denied",
                 "This is the bypass permission for when a pet is moving on a plot the owner is denied on");
+
+        missingPermission = config.getString("Missing-Permission", "&cYou are missing the &7{permission} &cpermission");
 
         checkSpawning = config.getBoolean("spawning-checks.enabled", true);
         checkSpawningRoads = config.getBoolean("spawning-checks.roads", false);
@@ -133,7 +140,7 @@ public class PlotSquaredAddon extends PetAddon {
 
     @Override
     public double getVersion() {
-        return 0.1;
+        return 0.2;
     }
 
     @Override
@@ -167,20 +174,18 @@ public class PlotSquaredAddon extends PetAddon {
         // Road
         if (plot == null) {
             if (!checkSpawningRoads) return;
-            if ((!AddonPermissions.hasPermission(this, player, masterBypass.getPermission()))
-                    && (!AddonPermissions.hasPermission(this, player, spawnRoad.getPermission()))) {
-                event.setCancelled(true);
-            }
+            if (AddonPermissions.hasPermission(this, player, masterBypass.getPermission())) return;
+            if (AddonPermissions.hasPermission(this, player, spawnRoad.getPermission())) return;
+            event.setCancelled(true, missingPermission.replace("{permission}", spawnRoad.getPermission()));
             return;
         }
 
         // Unclaimed plot
         if (!plot.hasOwner()) {
             if (!checkSpawningUnclaimed) return;
-            if ((!AddonPermissions.hasPermission(this, player, masterBypass.getPermission()))
-                    && (!AddonPermissions.hasPermission(this, player, spawnUnclaimed.getPermission()))) {
-                event.setCancelled(true);
-            }
+            if (AddonPermissions.hasPermission(this, player, masterBypass.getPermission())) return;
+            if (AddonPermissions.hasPermission(this, player, spawnUnclaimed.getPermission())) return;
+            event.setCancelled(true, missingPermission.replace("{permission}", spawnUnclaimed.getPermission()));
         }
 
         // I don't check if the player is denied here, because the denied player cant enter the plot anyway
@@ -203,41 +208,38 @@ public class PlotSquaredAddon extends PetAddon {
         // Road
         if (plot == null) {
             if (!checkMovingRoads) return;
-            if ((!AddonPermissions.hasPermission(this, player, masterBypass.getPermission()))
-                    && (!AddonPermissions.hasPermission(this, player, moveRoad.getPermission()))) {
-                if (removePet) {
-                    event.getEntity().getPetUser().removePet(event.getEntity().getPetType());
-                    return;
-                }
-                event.setCancelled(true);
+            if (AddonPermissions.hasPermission(this, player, masterBypass.getPermission())) return;
+            if (AddonPermissions.hasPermission(this, player, moveRoad.getPermission())) return;
+            if (removePet) {
+                event.getEntity().getPetUser().removePet(event.getEntity().getPetType());
+                return;
             }
+            event.setCancelled(true);
             return;
         }
 
         // Unclaimed plot
         if (!plot.hasOwner()) {
             if (!checkMovingUnclaimed) return;
-            if ((!AddonPermissions.hasPermission(this, player, masterBypass.getPermission()))
-                    && (!AddonPermissions.hasPermission(this, player, moveUnclaimed.getPermission()))) {
-                if (removePet) {
-                    event.getEntity().getPetUser().removePet(event.getEntity().getPetType());
-                    return;
-                }
-                event.setCancelled(true);
-            }
-        }
-
-        // Denied Plot
-        if (!plot.isDenied(player.getUniqueId())) return; // The owner of the pet is not denied
-
-        if (!checkMovingDenied) return;
-        if ((!AddonPermissions.hasPermission(this, player, masterBypass.getPermission()))
-                && (!AddonPermissions.hasPermission(this, player, moveDenied.getPermission()))) {
+            if (AddonPermissions.hasPermission(this, player, masterBypass.getPermission())) return;
+            if (AddonPermissions.hasPermission(this, player, moveUnclaimed.getPermission())) return;
             if (removePet) {
                 event.getEntity().getPetUser().removePet(event.getEntity().getPetType());
                 return;
             }
             event.setCancelled(true);
         }
+
+        // Denied Plot
+        if (!plot.isDenied(player.getUniqueId())) return; // The owner of the pet is not denied
+
+        if (!checkMovingDenied) return;
+        if (AddonPermissions.hasPermission(this, player, masterBypass.getPermission())) return;
+        if (AddonPermissions.hasPermission(this, player, moveDenied.getPermission())) return;
+        if (removePet) {
+            event.getEntity().getPetUser().removePet(event.getEntity().getPetType());
+            return;
+        }
+        event.setCancelled(true);
     }
 }

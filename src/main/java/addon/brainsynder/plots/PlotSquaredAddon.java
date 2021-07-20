@@ -9,6 +9,8 @@ import com.sk89q.worldedit.math.BlockVector3;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.plugin.Plugin;
 import simplepets.brainsynder.addon.AddonConfig;
 import simplepets.brainsynder.addon.AddonPermissions;
@@ -20,6 +22,7 @@ import simplepets.brainsynder.api.event.entity.PetMoveEvent;
 import simplepets.brainsynder.api.plugin.SimplePets;
 import simplepets.brainsynder.debug.DebugBuilder;
 
+import java.util.HashSet;
 import java.util.List;
 
 @Namespace(namespace = "PlotSquared")
@@ -39,6 +42,7 @@ public class PlotSquaredAddon extends PetAddon {
     private boolean checkSpawning = true;
     private boolean checkMoving = true;
 
+    private final HashSet<String> petUUIDs = new HashSet<>();
 
     @Override
     public void init() {
@@ -159,6 +163,7 @@ public class PlotSquaredAddon extends PetAddon {
 
     @EventHandler
     public void onSpawn(PetEntitySpawnEvent event) {
+        petUUIDs.add(event.getEntity().getEntity().getUniqueId().toString());
         if (!checkSpawning) return;
         Player player = event.getUser().getPlayer();
         org.bukkit.Location location = event.getUser().getPlayer().getLocation();
@@ -177,6 +182,7 @@ public class PlotSquaredAddon extends PetAddon {
             if (AddonPermissions.hasPermission(this, player, masterBypass.getPermission())) return;
             if (AddonPermissions.hasPermission(this, player, spawnRoad.getPermission())) return;
             event.setCancelled(true, missingPermission.replace("{permission}", spawnRoad.getPermission()));
+            petUUIDs.remove(event.getEntity().getEntity().getUniqueId().toString());
             return;
         }
 
@@ -186,6 +192,7 @@ public class PlotSquaredAddon extends PetAddon {
             if (AddonPermissions.hasPermission(this, player, masterBypass.getPermission())) return;
             if (AddonPermissions.hasPermission(this, player, spawnUnclaimed.getPermission())) return;
             event.setCancelled(true, missingPermission.replace("{permission}", spawnUnclaimed.getPermission()));
+            petUUIDs.remove(event.getEntity().getEntity().getUniqueId().toString());
         }
 
         // I don't check if the player is denied here, because the denied player cant enter the plot anyway
@@ -242,4 +249,19 @@ public class PlotSquaredAddon extends PetAddon {
         }
         event.setCancelled(true);
     }
+
+    // sweetheart this janky mess stays until p2 decides to be friendlier
+    @EventHandler(priority = EventPriority.HIGH)
+    public void onPetSpawn(CreatureSpawnEvent event) {
+        if (!petUUIDs.contains(event.getEntity().getUniqueId().toString())) return;
+        if (!event.isCancelled()) return;
+        petUUIDs.remove(event.getEntity().getUniqueId().toString());
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onPetSpawnPostP2(CreatureSpawnEvent event) {
+        if (petUUIDs.contains(event.getEntity().getUniqueId().toString())) event.setCancelled(false);
+        petUUIDs.remove(event.getEntity().getUniqueId().toString());
+    }
+
 }

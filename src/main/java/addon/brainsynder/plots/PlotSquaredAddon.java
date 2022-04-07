@@ -5,12 +5,10 @@ import com.plotsquared.core.location.Location;
 import com.plotsquared.core.plot.Plot;
 import com.plotsquared.core.plot.PlotArea;
 import com.sk89q.worldedit.math.BlockVector3;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.CreatureSpawnEvent;
-import org.bukkit.plugin.Plugin;
 import simplepets.brainsynder.addon.AddonConfig;
 import simplepets.brainsynder.addon.AddonPermissions;
 import simplepets.brainsynder.addon.PermissionData;
@@ -18,8 +16,6 @@ import simplepets.brainsynder.addon.PetModule;
 import simplepets.brainsynder.api.Namespace;
 import simplepets.brainsynder.api.event.entity.PetEntitySpawnEvent;
 import simplepets.brainsynder.api.event.entity.PetMoveEvent;
-import simplepets.brainsynder.api.plugin.SimplePets;
-import simplepets.brainsynder.debug.DebugBuilder;
 
 import java.util.HashSet;
 
@@ -50,17 +46,6 @@ public class PlotSquaredAddon extends PetModule {
         AddonPermissions.register(this, moveMaster, moveRoad);
         AddonPermissions.register(this, moveMaster, moveUnclaimed);
         AddonPermissions.register(this, moveMaster, moveDenied);
-    }
-
-    @Override
-    public boolean shouldEnable() {
-        Plugin plugin = Bukkit.getPluginManager().getPlugin("PlotSquared");
-        if ((plugin != null) && plugin.isEnabled()) return true;
-        SimplePets.getDebugLogger().debug(DebugBuilder.build(getClass()).setLevel(SimplePets.ADDON).setMessages(
-                "You seem to be missing the PlotSquared plugin...",
-                "Download it here: https://www.spigotmc.org/resources/77506/"
-        ));
-        return false;
     }
 
     @Override

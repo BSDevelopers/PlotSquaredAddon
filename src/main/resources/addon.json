@@ -9,5 +9,12 @@
     "&7This addon links into the PlotSquared plugin",
     "&7to allow/deny certain pet events from happening",
     "&7on certain parts of a plot world (road/unclaimed/denied)"
+  ],
+
+  "plugin-support": [
+    {
+      "name": "PlotSquared",
+      "url": "https://www.spigotmc.org/resources/77506/"
+    }
   ]
 }

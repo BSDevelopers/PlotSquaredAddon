@@ -1,0 +1,13 @@
+{
+  "name": "PlotSquared",
+  "author": "brainsynder",
+
+  "version": 0.4,
+  "supported-build": 163,
+
+  "description": [
+    "&7This addon links into the PlotSquared plugin",
+    "&7to allow/deny certain pet events from happening",
+    "&7on certain parts of a plot world (road/unclaimed/denied)"
+  ]
+}

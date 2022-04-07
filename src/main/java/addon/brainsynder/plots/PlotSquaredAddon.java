@@ -1,6 +1,5 @@
 package addon.brainsynder.plots;
 
-import com.google.common.collect.Lists;
 import com.plotsquared.core.PlotSquared;
 import com.plotsquared.core.location.Location;
 import com.plotsquared.core.plot.Plot;
@@ -15,7 +14,7 @@ import org.bukkit.plugin.Plugin;
 import simplepets.brainsynder.addon.AddonConfig;
 import simplepets.brainsynder.addon.AddonPermissions;
 import simplepets.brainsynder.addon.PermissionData;
-import simplepets.brainsynder.addon.PetAddon;
+import simplepets.brainsynder.addon.PetModule;
 import simplepets.brainsynder.api.Namespace;
 import simplepets.brainsynder.api.event.entity.PetEntitySpawnEvent;
 import simplepets.brainsynder.api.event.entity.PetMoveEvent;
@@ -23,10 +22,9 @@ import simplepets.brainsynder.api.plugin.SimplePets;
 import simplepets.brainsynder.debug.DebugBuilder;
 
 import java.util.HashSet;
-import java.util.List;
 
 @Namespace(namespace = "PlotSquared")
-public class PlotSquaredAddon extends PetAddon {
+public class PlotSquaredAddon extends PetModule {
     private PermissionData masterBypass, spawnMaster, spawnRoad, spawnUnclaimed, moveMaster, moveRoad, moveUnclaimed, moveDenied;
 
     private String missingPermission;
@@ -140,25 +138,6 @@ public class PlotSquaredAddon extends PetAddon {
 
     @Override
     public void cleanup() {
-    }
-
-    @Override
-    public double getVersion() {
-        return 0.3;
-    }
-
-    @Override
-    public String getAuthor() {
-        return "brainsynder";
-    }
-
-    @Override
-    public List<String> getDescription() {
-        return Lists.newArrayList(
-                "&7This addon links into the PlotSquared plugin",
-                "&7to allow/deny certain pet events from happening",
-                "&7on certain parts of a plot world (road/unclaimed/denied)"
-        );
     }
 
     @EventHandler

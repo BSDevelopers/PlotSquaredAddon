@@ -166,6 +166,8 @@ public class PlotSquaredAddon extends PetModule {
     public void onMove(PetMoveEvent event) {
         if (!checkMoving) return;
         Player player = event.getEntity().getPetUser().getPlayer();
+        if (player == null) return;
+
         org.bukkit.Location location = event.getEntity().getEntity().getLocation();
 
         Location loc = Location.at(location.getWorld().getName(), BlockVector3.at(location.getX(), location.getY(), location.getZ()), location.getYaw(), location.getPitch());
